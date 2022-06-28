@@ -10,20 +10,26 @@ Les tests unitaires de ce TP portent sur le fichier voting.sol tel que je l'ai t
 Les tests sont dans quasimment le même ordre que celui du fichier du développeur de "voting.sol".
 
 Ces fonctions ont été testés :
+
 **Contract: Voting**
-&emsp; - 28 Tests : Getters, setters...
-&emsp;&emsp;dont 9 Tests pour REGISTRATION + getVoter()
-&emsp;&emsp;&emsp;dont 5 Tests pour getVoter()
-&emsp;&emsp;dont 8 Tests : PROPOSAL + getOneProposal
-&emsp;&emsp;&emsp;dont 4 Tests pour getOneProposal()
-&emsp;&emsp;dont 9 Tests : VOTE + getOneProposal
-&emsp;&emsp;&emsp;dont 3 Tests pour setVote()
-&emsp; - 21 Tests : STATE
-&emsp;&emsp;dont 4 Tests sur startProposalsRegistering()
-&emsp;&emsp;dont 4 Tests sur endProposalsRegistering()
-&emsp;&emsp;dont 4 Tests sur startVotingSession()
-&emsp;&emsp;dont 4 test sur endVotingSession()
-&emsp;&emsp;dont 5 Tests sur tallyVotes()
+
+- 28 Tests Getters, setters... dont :
+  - 1 test pour vérifier que l'administrateur possède bien le 1er compte.
+  - 1 test pour vérifier que l'administrateur est le propriétaire de l'instance
+  - 10 Tests pour REGISTRATION + getVoter()
+    - dont 5 Tests pour getVoter()
+  - 9 Tests : PROPOSAL + getOneProposal
+    - dont 4 Tests pour getOneProposal()
+  - 10 Tests : VOTE + getOneProposal
+    - dont 3 Tests pour setVote()
+- 21 Tests STATE dont :
+  - 4 Tests sur startProposalsRegistering()
+  - 4 Tests sur endProposalsRegistering()
+  - 4 Tests sur startVotingSession()
+  - 4 test sur endVotingSession()
+  - 5 Tests sur tallyVotes()
+
+**52 tests unitaires au total.**
 
 D'autres tests ont aussi été réalisés avec les outils **"eth-gas-reporter"** et **"solidity-coverage"**.
 Les 2 images ci-dessous montrent les résultats.
