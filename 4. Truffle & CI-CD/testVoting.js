@@ -1,4 +1,3 @@
-// const Voters = artifacts.require("./voting.sol");
 const votingArtifacts = artifacts.require("Voting");
 const { BN, expectRevert, expectEvent } = require('@openzeppelin/test-helpers');
 const { expect } = require('chai');
@@ -15,9 +14,7 @@ contract('Voting', accounts => {
     const voter_08 = accounts[8];
     const VoterHacker = accounts[9];
 
-    // const VotingInstance = await Voters.deployed();
     let VotingInstance;
-    var cpt = 0;
     let proposal_01 = "PROPOSAL_Blabla_1";
     let proposal_02 = "PROPOSAL_Blabla_2";
     let proposal_03 = "PROPOSAL_Blabla_3";
@@ -56,8 +53,14 @@ contract('Voting', accounts => {
                 expect(new BN(Status)).to.be.bignumber.equal(new BN(0));
             });
 
+            it("should add voters only when voters registration is open, revert", async () => {
+                await VotingInstance.startProposalsRegistering({from: adminOwner});
+                await expectRevert(VotingInstance.addVoter.call(voter_01, {from: adminOwner}), "Voters registration is not open yet");
+            });
+
+
             it("should not add an already submitted address, revert", async () => {
-            await expectRevert(VotingInstance.addVoter(voter_01, { from: adminOwner }), "Already registered");
+                await expectRevert(VotingInstance.addVoter(voter_01, { from: adminOwner }), "Already registered");
             });
 
             it("should get event when a voter is added", async () => {
@@ -66,14 +69,6 @@ contract('Voting', accounts => {
             });
             
             context("Tests for getVoter()", () => {
-        /*
-                // check type address _addr / getVoter
-                // check type return voters[_addr] / getVoter
-                it("should be address type, revert", async () => {
-                    await VotingInstance.addVoter(voter_02, { from: adminOwner });
-                    await expectRevert(VotingInstance.getVoter("BadAddressType", { from: VoterHacker }), "Error: invalid address");
-                });
-        */
 
                 it("only Voters should get/view other voters, revert", async () => {
                     await VotingInstance.addVoter(voter_02, { from: adminOwner });
@@ -112,12 +107,6 @@ contract('Voting', accounts => {
                     expect(new BN(storedData.votedProposalId)).to.be.bignumber.equal(new BN(0));
                 });
 
-                // it("should not get a non existing voter, revert", async () => {
-                //     await VotingInstance.addVoter(voter_02, { from: adminOwner });
-                //     await VotingInstance.addVoter(voter_03, { from: adminOwner });
-                //     await expectRevert.unspecified(VotingInstance.getVoter(VoterHacker, { from: voter_02 }));
-                // });
-
             });
         });
 
@@ -129,6 +118,11 @@ contract('Voting', accounts => {
 
                 await expectRevert(VotingInstance.addProposal("Proposal from Hacker", { from: VoterHacker }), "You're not a voter");
             });
+
+            it("should add proposals only when proposals registering is open, revert", async () => {
+                await expectRevert(VotingInstance.addProposal.call(proposal_01, { from: voter_01 }), "Proposals are not allowed yet");
+            });
+
 
             it("should not register an empty proposal, revert", async () => {
                 await VotingInstance.addVoter(voter_02, { from: adminOwner });
@@ -220,6 +214,10 @@ contract('Voting', accounts => {
                 await expectRevert(VotingInstance.setVote(0, { from: VoterHacker }), "You're not a voter"); // Proposal id = 0.
             });
 
+            it("should register votes only when voting session is open, revert", async () => {
+                await expectRevert(VotingInstance.setVote.call(0, { from: voter_01 }), "Voting session havent started yet");
+            });
+
             it("workflowStatus should be at the VotingSessionStarted step", async () => {
                 await VotingInstance.startProposalsRegistering({from: adminOwner});
                 await VotingInstance.addProposal(proposal_01, { from: voter_01 });
@@ -249,7 +247,6 @@ contract('Voting', accounts => {
                 await VotingInstance.endProposalsRegistering({from: adminOwner});
                 await VotingInstance.startVotingSession({from: adminOwner});
 
-                // await expectRevert(VotingInstance.setVote(3, {from: voter_01}), "Proposal not found"); // 3 = id of non existing proposal.
                 await expectRevert.unspecified(VotingInstance.setVote(3, {from: voter_01}));
             });
 
@@ -425,6 +422,8 @@ contract('Voting', accounts => {
                 await expectRevert(VotingInstance.endVotingSession({from: adminOwner}), "Voting session havent started yet");
             });
 
+
+
             it("workflowStatus should be at the VotingSessionEnded step", async () => {
                 await VotingInstance.startProposalsRegistering({from: adminOwner});
                 await VotingInstance.endProposalsRegistering({from: adminOwner});
@@ -440,7 +439,6 @@ contract('Voting', accounts => {
                 await VotingInstance.startProposalsRegistering({from: adminOwner});
                 await VotingInstance.endProposalsRegistering({from: adminOwner});
                 await VotingInstance.startVotingSession({from: adminOwner});
-                // await VotingInstance.endVotingSession({from: adminOwner});
 
                 const findEvent = await VotingInstance.endVotingSession({from: adminOwner});
                 expectEvent(findEvent, 'WorkflowStatusChange', { previousStatus: new BN(3), newStatus: new BN(4) });
