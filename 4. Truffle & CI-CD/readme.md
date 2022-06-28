@@ -13,7 +13,7 @@ Ces fonctions ont été testés :
 
 **Contract: Voting**
 
-- 28 Tests Getters, setters... dont :
+- 31 Tests Getters, setters... dont :
   - 1 test pour vérifier que l'administrateur possède bien le 1er compte.
   - 1 test pour vérifier que l'administrateur est le propriétaire de l'instance
   - 10 Tests pour REGISTRATION + getVoter()
